@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tencent_calls_uikit/src/call_state.dart';
 import 'package:tencent_calls_uikit/src/data/constants.dart';
+import 'package:tencent_calls_uikit/src/gen/colors.gen.dart';
 import 'package:tencent_cloud_uikit_core/tencent_cloud_uikit_core.dart';
 
 class TimingWidget extends StatefulWidget {
@@ -19,22 +20,28 @@ class _TimingWidgetState extends State<TimingWidget> {
     refreshTimingCallBack = (arg) {
       setState(() {});
     };
-    TUICore.instance.registerEvent(setStateEventRefreshTiming, refreshTimingCallBack);
+    TUICore.instance
+        .registerEvent(setStateEventRefreshTiming, refreshTimingCallBack);
   }
 
   @override
   Widget build(BuildContext context) {
     return Text(
       _formatCallTime(),
-      textScaleFactor: 1.0,
-      style: const TextStyle(color: Colors.white, fontSize: 14),
+      textScaler: const TextScaler.linear(1.0),
+      style: const TextStyle(
+        color: ColorName.color0xFF00FF44,
+        fontSize: 16,
+        height: 1.25,
+      ),
     );
   }
 
   @override
   void dispose() {
     super.dispose();
-    TUICore.instance.unregisterEvent(setStateEventRefreshTiming, refreshTimingCallBack);
+    TUICore.instance
+        .unregisterEvent(setStateEventRefreshTiming, refreshTimingCallBack);
   }
 
   String _formatCallTime() {
@@ -44,6 +51,8 @@ class _TimingWidgetState extends State<TimingWidget> {
     String minuteShow = minute <= 9 ? "0$minute" : "$minute";
     int second = CallState.instance.timeCount % 60;
     String secondShow = second <= 9 ? "0$second" : "$second";
-    return hour > 0 ? "$hourShow:$minuteShow:$secondShow" : "$minuteShow:$secondShow";
+    return hour > 0
+        ? "$hourShow:$minuteShow:$secondShow"
+        : "$minuteShow:$secondShow";
   }
 }

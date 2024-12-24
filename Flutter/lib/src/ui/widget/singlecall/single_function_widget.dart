@@ -5,36 +5,60 @@ import 'package:tencent_calls_engine/tencent_calls_engine.dart';
 import 'package:tencent_calls_uikit/src/call_manager.dart';
 import 'package:tencent_calls_uikit/src/call_state.dart';
 import 'package:tencent_calls_uikit/src/data/constants.dart';
+import 'package:tencent_calls_uikit/src/gen/assets.gen.dart';
+import 'package:tencent_calls_uikit/src/gen/colors.gen.dart';
 import 'package:tencent_calls_uikit/src/i18n/i18n_utils.dart';
-import 'package:tencent_calls_uikit/src/ui/widget/common/extent_button.dart';
+import 'package:tencent_calls_uikit/src/ui/widget/common/circle_button.dart';
 import 'package:tencent_calls_uikit/src/utils/permission.dart';
 import 'package:tencent_cloud_uikit_core/tencent_cloud_uikit_core.dart';
 
 class SingleFunctionWidget {
+  /// Refactor
   static Widget buildFunctionWidget(Function close) {
-    if (TUICallStatus.waiting == CallState.instance.selfUser.callStatus) {
-      if (TUICallRole.caller == CallState.instance.selfUser.callRole) {
-        if (TUICallMediaType.audio == CallState.instance.mediaType) {
-          return _buildAudioCallerWaitingAndAcceptedView(close);
-        } else {
-          if (CallState.instance.showVirtualBackgroundButton) {
-            return _buildVBgVideoCallerWaitingView(close);
-          } else {
-            return _buildVideoCallerWaitingView(close);
-          }
-        }
-      } else {
-        return _buildAudioAndVideoCalleeWaitingView(close);
-      }
-    } else if (TUICallStatus.accept == CallState.instance.selfUser.callStatus) {
-      if (TUICallMediaType.audio == CallState.instance.mediaType) {
-        return _buildAudioCallerWaitingAndAcceptedView(close);
-      } else {
-        return _buildVideoCallerAndCalleeAcceptedView(close);
-      }
-    } else {
-      return Container();
+    final callStatus = CallState.instance.selfUser.callStatus;
+    final callRole = CallState.instance.selfUser.callRole;
+    final mediaType = CallState.instance.mediaType;
+
+    if (callStatus == TUICallStatus.waiting) {
+      return _buildWaitingWidget(callRole, mediaType, close);
     }
+
+    if (callStatus == TUICallStatus.accept) {
+      return _buildAcceptedWidget(mediaType, close);
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  static Widget _buildAcceptedWidget(
+    TUICallMediaType mediaType,
+    Function close,
+  ) {
+    if (mediaType == TUICallMediaType.audio) {
+      return _buildAudioCallerWaitingAndAcceptedView(close);
+    }
+
+    return _buildVideoCallerAndCalleeAcceptedView(close);
+  }
+
+  static Widget _buildWaitingWidget(
+    TUICallRole callRole,
+    TUICallMediaType mediaType,
+    Function close,
+  ) {
+    if (TUICallRole.caller == callRole) {
+      if (mediaType == TUICallMediaType.audio) {
+        return _buildAudioCallerWaitingAndAcceptedView(close);
+      }
+
+      if (CallState.instance.showVirtualBackgroundButton) {
+        return _buildVBgVideoCallerWaitingView(close);
+      }
+
+      return _buildVideoCallerWaitingView(close);
+    }
+
+    return _buildAudioAndVideoCalleeWaitingView(close);
   }
 
   static Widget _buildAudioCallerWaitingAndAcceptedView(Function close) {
@@ -62,65 +86,46 @@ class SingleFunctionWidget {
   }
 
   static Widget _buildVBgVideoCallerWaitingView(Function close) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildSwitchCameraButton(),
-            _buildVirtualBackgroundButton(),
-            _buildCameraControlButton(),
-          ],
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const SizedBox(
-              width: 100,
-            ),
-            _buildHangupButton(close),
-            const SizedBox(
-              width: 100,
-            ),
-          ],
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 44),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildSwitchCameraButton(),
+              _buildVirtualBackgroundButton(),
+              _buildCameraControlButton(),
+              _buildHangupButton(close),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
   static Widget _buildVideoCallerAndCalleeAcceptedView(Function close) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildMicControlButton(),
-            _buildSpeakerphoneButton(),
-            _buildCameraControlButton(),
-          ],
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          CallState.instance.showVirtualBackgroundButton
-              ? _buildVirtualBackgroundSmallButton()
-              : const SizedBox(
-                  width: 100,
-                ),
-          _buildHangupButton(close),
-          CallState.instance.isCameraOpen
-              ? _buildSwitchCameraSmallButton()
-              : const SizedBox(
-                  width: 100,
-                ),
-        ]),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildMicControlButton(),
+              const Spacer(),
+              _buildCameraControlButton(),
+              const Spacer(),
+              _buildHangupButton(close),
+              const Spacer(),
+              _buildVirtualBackgroundButton(),
+              const Spacer(),
+              _buildSwitchCameraButton(),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -131,23 +136,25 @@ class SingleFunctionWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ExtendButton(
-              imgUrl: "assets/images/hangup.png",
-              tips: CallKit_t("hangUp"),
-              textColor: _getTextColor(),
-              imgHeight: 60,
-              onTap: () {
-                _handleReject(close);
-              },
+            FuncButton.circleTips(
+              path: Assets.icons.deny.path,
+              fit: BoxFit.cover,
+              iconHeight: 40,
+              padding: const EdgeInsets.all(16),
+              onPressed: () => _handleReject(close),
+              backgroundColor: ColorName.color0xFFFE090E,
+              tips: 'Từ chối',
+              // tips: CallKit_t("hangUp"),
             ),
-            ExtendButton(
-              imgUrl: "assets/images/dialing.png",
-              tips: CallKit_t("accept"),
-              textColor: _getTextColor(),
-              imgHeight: 60,
-              onTap: () {
-                _handleAccept();
-              },
+            FuncButton.circleTips(
+              path: Assets.icons.accept.path,
+              fit: BoxFit.cover,
+              iconHeight: 40,
+              padding: const EdgeInsets.all(16),
+              onPressed: _handleAccept,
+              backgroundColor: ColorName.color0xFF0094FF,
+              tips: 'Chấp nhận',
+              // tips: CallKit_t("accept"),
             ),
           ],
         )
@@ -172,117 +179,127 @@ class SingleFunctionWidget {
     } else {
       CallState.instance.audioDevice = TUIAudioPlaybackDevice.earpiece;
     }
-    await CallManager.instance.selectAudioPlaybackDevice(CallState.instance.audioDevice);
+    await CallManager.instance
+        .selectAudioPlaybackDevice(CallState.instance.audioDevice);
     TUICore.instance.notifyEvent(setStateEvent);
   }
 
   static Widget _buildSpeakerphoneButton() {
-    return ExtendButton(
-      imgUrl: CallState.instance.audioDevice == TUIAudioPlaybackDevice.speakerphone
-          ? "assets/images/handsfree_on.png"
-          : "assets/images/handsfree.png",
-      tips: CallState.instance.audioDevice == TUIAudioPlaybackDevice.speakerphone
-          ? CallKit_t("speakerIsOn")
-          : CallKit_t("speakerIsOff"),
-      textColor: _getTextColor(),
-      imgHeight: 60,
-      onTap: () {
-        _handleSwitchAudioDevice();
-      },
+    var path = Assets.icons.handsfree.path;
+    var backgroundColor = ColorName.color0xFFFFFFFF.withOpacity(0.20);
+    var iconColor = ColorName.color0xFFFFFFFF;
+    if (CallState.instance.audioDevice == TUIAudioPlaybackDevice.speakerphone) {
+      path = Assets.icons.handsfreeOn.path;
+      backgroundColor = ColorName.color0xFFFFFFFF;
+      iconColor = ColorName.color0xFF000000;
+    }
+
+    return FuncButton.circle(
+      path: path,
+      fit: BoxFit.cover,
+      padding: const EdgeInsets.all(14),
+      onPressed: _handleSwitchAudioDevice,
+      iconColor: iconColor,
+      backgroundColor: backgroundColor,
     );
   }
 
   static Widget _buildCameraControlButton() {
-    return ExtendButton(
-      imgUrl: CallState.instance.isCameraOpen
-          ? "assets/images/camera_on.png"
-          : "assets/images/camera_off.png",
-      tips: CallState.instance.isCameraOpen ? CallKit_t("cameraIsOn") : CallKit_t("cameraIsOff"),
-      textColor: _getTextColor(),
-      imgHeight: 60,
-      onTap: () {
-        _handleOpenCloseCamera();
-      },
+    var path = Assets.icons.cameraOff.path;
+    var backgroundColor = ColorName.color0xFFFFFFFF;
+    var iconColor = ColorName.color0xFF000000;
+    if (CallState.instance.isCameraOpen) {
+      path = Assets.icons.cameraOn.path;
+      backgroundColor = ColorName.color0xFFFFFFFF.withOpacity(0.20);
+      iconColor = ColorName.color0xFFFFFFFF;
+    }
+
+    return FuncButton.circle(
+      path: path,
+      fit: BoxFit.cover,
+      iconHeight: 26,
+      padding: const EdgeInsets.all(12),
+      onPressed: _handleOpenCloseCamera,
+      iconColor: iconColor,
+      backgroundColor: backgroundColor,
     );
   }
 
   static Widget _buildMicControlButton() {
-    return ExtendButton(
-      imgUrl: CallState.instance.isMicrophoneMute
-          ? "assets/images/mute_on.png"
-          : "assets/images/mute.png",
-      tips: CallState.instance.isMicrophoneMute
-          ? CallKit_t("microphoneIsOff")
-          : CallKit_t("microphoneIsOn"),
-      textColor: _getTextColor(),
-      imgHeight: 60,
-      onTap: () {
-        _handleSwitchMic();
-      },
+    var path = Assets.icons.mute.path;
+    var backgroundColor = ColorName.color0xFFFFFFFF.withOpacity(0.20);
+    var iconColor = ColorName.color0xFFFFFFFF;
+    if (CallState.instance.isMicrophoneMute) {
+      path = Assets.icons.muteOn.path;
+      backgroundColor = ColorName.color0xFFFFFFFF;
+      iconColor = ColorName.color0xFF000000;
+    }
+
+    return FuncButton.circle(
+      path: path,
+      fit: BoxFit.cover,
+      padding: const EdgeInsets.all(14),
+      onPressed: _handleSwitchMic,
+      backgroundColor: backgroundColor,
+      iconColor: iconColor,
     );
   }
 
   static Widget _buildHangupButton(Function close) {
-    return ExtendButton(
-      imgUrl: "assets/images/hangup.png",
-      tips: CallKit_t("hangUp"),
-      textColor: _getTextColor(),
-      imgHeight: 60,
-      onTap: () {
-        _handleHangUp(close);
-      },
-    );
-  }
-
-  static Widget _buildSwitchCameraSmallButton() {
-    return ExtendButton(
-      imgUrl: "assets/images/switch_camera.png",
-      tips: '',
-      textColor: _getTextColor(),
-      imgHeight: 28,
-      imgOffsetX: -16,
-      onTap: () {
-        _handleSwitchCamera();
-      },
-    );
-  }
-
-  static Widget _buildVirtualBackgroundSmallButton() {
-    return ExtendButton(
-      imgUrl: "assets/images/blur_background_accept.png",
-      tips: '',
-      textColor: _getTextColor(),
-      imgHeight: 28,
-      imgOffsetX: 16,
-      onTap: () {
-        _handleOpenBlurBackground();
-      },
-    );
-  }
-
-  static Widget _buildVirtualBackgroundButton() {
-    return ExtendButton(
-      imgUrl: CallState.instance.enableBlurBackground
-          ? "assets/images/blur_background_waiting_enable.png"
-          : "assets/images/blur_background_waiting_disable.png",
-      tips: CallKit_t("blurBackground"),
-      textColor: _getTextColor(),
-      imgHeight: 60,
-      onTap: () {
-        _handleOpenBlurBackground();
-      },
+    return FuncButton.circle(
+      path: Assets.icons.hangup.path,
+      fit: BoxFit.cover,
+      iconHeight: 26,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      onPressed: () => _handleHangUp(close),
+      backgroundColor: ColorName.color0xFFFE090E,
     );
   }
 
   static Widget _buildSwitchCameraButton() {
-    return ExtendButton(
-      imgUrl: "assets/images/switch_camera_group.png",
-      tips: CallKit_t("switchCamera"),
-      textColor: _getTextColor(),
-      imgHeight: 60,
-      onTap: () {
-        _handleSwitchCamera();
-      },
+    var backgroundColor = ColorName.color0xFFFFFFFF.withOpacity(0.20);
+    var iconColor = ColorName.color0xFFFFFFFF;
+    if (CallState.instance.camera == TUICamera.back) {
+      backgroundColor = ColorName.color0xFFFFFFFF;
+      iconColor = ColorName.color0xFF000000;
+    }
+    if (!CallState.instance.isCameraOpen) {
+      iconColor = ColorName.color0xFF000000.withOpacity(0.30);
+      backgroundColor = ColorName.color0xFFFFFFFF.withOpacity(0.20);
+    }
+
+    return FuncButton.circle(
+      path: Assets.icons.switchCamera.path,
+      fit: BoxFit.cover,
+      iconHeight: 26,
+      padding: const EdgeInsets.all(12),
+      onPressed: !CallState.instance.isCameraOpen ? null : _handleSwitchCamera,
+      backgroundColor: backgroundColor,
+      iconColor: iconColor,
+    );
+  }
+
+  static Widget _buildVirtualBackgroundButton() {
+    var backgroundColor = ColorName.color0xFFFFFFFF.withOpacity(0.20);
+    var iconColor = ColorName.color0xFFFFFFFF;
+    if (CallState.instance.enableBlurBackground) {
+      backgroundColor = ColorName.color0xFFFFFFFF;
+      iconColor = ColorName.color0xFF000000;
+    }
+
+    if (!CallState.instance.isCameraOpen) {
+      iconColor = ColorName.color0xFF000000.withOpacity(0.30);
+      backgroundColor = ColorName.color0xFFFFFFFF.withOpacity(0.20);
+    }
+
+    return FuncButton.circle(
+      path: Assets.icons.blurBackground.path,
+      fit: BoxFit.cover,
+      padding: const EdgeInsets.all(14),
+      onPressed:
+          !CallState.instance.isCameraOpen ? null : _handleOpenBlurBackground,
+      backgroundColor: backgroundColor,
+      iconColor: iconColor,
     );
   }
 
@@ -299,7 +316,8 @@ class SingleFunctionWidget {
   static _handleAccept() async {
     PermissionResult permissionRequestResult = PermissionResult.requesting;
     if (Platform.isAndroid) {
-      permissionRequestResult = await Permission.request(CallState.instance.mediaType);
+      permissionRequestResult =
+          await Permission.request(CallState.instance.mediaType);
     }
     if (permissionRequestResult == PermissionResult.granted || Platform.isIOS) {
       await CallManager.instance.accept();
@@ -313,8 +331,10 @@ class SingleFunctionWidget {
   static void _handleOpenCloseCamera() async {
     CallState.instance.isCameraOpen = !CallState.instance.isCameraOpen;
     if (CallState.instance.isCameraOpen) {
-      await CallManager.instance
-          .openCamera(CallState.instance.camera, CallState.instance.selfUser.viewID);
+      await CallManager.instance.openCamera(
+        CallState.instance.camera,
+        CallState.instance.selfUser.viewID,
+      );
     } else {
       await CallManager.instance.closeCamera();
     }
@@ -322,8 +342,10 @@ class SingleFunctionWidget {
   }
 
   static void _handleOpenBlurBackground() async {
-    CallState.instance.enableBlurBackground = !CallState.instance.enableBlurBackground;
-    await CallManager.instance.setBlurBackground(CallState.instance.enableBlurBackground);
+    CallState.instance.enableBlurBackground =
+        !CallState.instance.enableBlurBackground;
+    await CallManager.instance
+        .setBlurBackground(CallState.instance.enableBlurBackground);
     TUICore.instance.notifyEvent(setStateEvent);
   }
 
@@ -335,9 +357,5 @@ class SingleFunctionWidget {
     }
     await CallManager.instance.switchCamera(CallState.instance.camera);
     TUICore.instance.notifyEvent(setStateEvent);
-  }
-
-  static Color _getTextColor() {
-    return Colors.white;
   }
 }

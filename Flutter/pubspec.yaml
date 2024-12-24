@@ -20,11 +20,15 @@ dependencies:
   tencent_calls_engine: ">=2.7.1 <2.8.0"
   tencent_cloud_uikit_core: ^1.7.3
   tencent_cloud_chat_sdk: any
+  flutter_svg: ^2.0.16
+  gap: ^3.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  build_runner: ^2.4.13
+  flutter_gen_runner: ^5.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -54,6 +58,7 @@ flutter:
   assets:
     - assets/audios/
     - assets/images/
+    - assets/icons/
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
@@ -80,3 +85,12 @@ flutter:
   #
   # For details regarding fonts in packages, see
   # https://flutter.dev/custom-fonts/#from-packages
+flutter_gen:
+  output: lib/src/gen/
+  line_length: 80
+  integrations:
+    flutter_svg: true
+
+  colors:
+    inputs:
+      - assets/color/colors.xml
