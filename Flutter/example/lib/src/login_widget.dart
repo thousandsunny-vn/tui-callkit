@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tencent_calls_engine/tencent_calls_engine.dart';
 import 'package:tencent_calls_uikit/tuicall_kit.dart';
 import 'package:tencent_cloud_chat_push/tencent_cloud_chat_push.dart';
+import 'package:tencent_cloud_chat_sdk/tencent_im_sdk_plugin.dart';
 import 'package:tuicall_kit_example/debug/generate_test_user_sig.dart';
 import 'package:tuicall_kit_example/observer_functions.dart';
 import 'package:tuicall_kit_example/src/main_widget.dart';
 import 'package:tuicall_kit_example/src/profile_widget.dart';
 import 'package:tuicall_kit_example/src/settings/settings_config.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:tencent_calls_engine/tencent_calls_engine.dart';
-import 'package:tencent_cloud_chat_sdk/tencent_im_sdk_plugin.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:tencent_cloud_chat_sdk/enum/log_level_enum.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tencent_cloud_chat_sdk/enum/V2TimSDKListener.dart';
 
 class LoginWidget extends StatefulWidget {
   const LoginWidget({Key? key}) : super(key: key);
@@ -72,14 +70,19 @@ class _LoginWidgetState extends State<LoginWidget> {
                 Column(
                   children: [
                     SizedBox(
-                        width: _calculateTextWidth(AppLocalizations.of(context)!.trtc, const TextStyle(
-                            fontSize: 32))  > (MediaQuery.of(context).size.width - 70 - 10) ?
-                        _calculateTextWidth(AppLocalizations .of(context)!.trtc, const TextStyle(
-                            fontSize: 32)) / 2 :
-                        _calculateTextWidth(AppLocalizations .of(context)!.trtc, const TextStyle(
-                            fontSize: 32)),
+                        width: _calculateTextWidth(
+                                    AppLocalizations.of(context)!.trtc,
+                                    const TextStyle(fontSize: 32)) >
+                                (MediaQuery.of(context).size.width - 70 - 10)
+                            ? _calculateTextWidth(
+                                    AppLocalizations.of(context)!.trtc,
+                                    const TextStyle(fontSize: 32)) /
+                                2
+                            : _calculateTextWidth(
+                                AppLocalizations.of(context)!.trtc,
+                                const TextStyle(fontSize: 32)),
                         child: Text(
-                          AppLocalizations .of(context)!.trtc,
+                          AppLocalizations.of(context)!.trtc,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -87,8 +90,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                               fontStyle: FontStyle.normal,
                               fontWeight: FontWeight.w400,
                               color: Colors.black),
-                        )
-                    )
+                        ))
                   ],
                 )
               ],
@@ -116,7 +118,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               children: [
                 const SizedBox(width: 10),
                 Text(
-                  AppLocalizations .of(context)!.user_id,
+                  AppLocalizations.of(context)!.user_id,
                   style: const TextStyle(
                       fontSize: 16,
                       fontStyle: FontStyle.normal,
@@ -128,7 +130,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                     child: TextField(
                         autofocus: true,
                         decoration: InputDecoration(
-                          hintText: AppLocalizations .of(context)!.enter_user_id,
+                          hintText: AppLocalizations.of(context)!.enter_user_id,
                           border: InputBorder.none,
                           labelStyle: const TextStyle(fontSize: 16),
                         ),
@@ -149,7 +151,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                     borderRadius: BorderRadius.circular(8))),
               ),
               child: Text(
-                AppLocalizations .of(context)!.login,
+                AppLocalizations.of(context)!.login,
                 style: const TextStyle(
                     fontSize: 16,
                     fontStyle: FontStyle.normal,
@@ -169,8 +171,7 @@ class _LoginWidgetState extends State<LoginWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
-      Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
@@ -182,7 +183,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  AppLocalizations .of(context)!.quick_access,
+                  AppLocalizations.of(context)!.quick_access,
                   style: const TextStyle(
                       fontSize: 16,
                       fontStyle: FontStyle.normal,
@@ -204,46 +205,46 @@ class _LoginWidgetState extends State<LoginWidget> {
               children: [
                 const SizedBox(width: 1),
                 InkWell(
-                  child:
-                  SizedBox(
+                  child: SizedBox(
                     width: MediaQuery.of(context).size.width / 4 - 20,
                     child: Text(
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      AppLocalizations .of(context)!.package_purchase,
-                      style: const TextStyle(fontSize: 14, color: Color(0xff056DF6)),
+                      AppLocalizations.of(context)!.package_purchase,
+                      style: const TextStyle(
+                          fontSize: 14, color: Color(0xff056DF6)),
                     ),
                   ),
                   onTap: () => _lanuchURL(0),
                 ),
                 InkWell(
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width / 4 - 20,
-                    child: Text(
-                      AppLocalizations .of(context)!.integration,
-                    style: const TextStyle(fontSize: 14, color: Color(0xff056DF6)),
-                    )
-                  ),
+                      width: MediaQuery.of(context).size.width / 4 - 20,
+                      child: Text(
+                        AppLocalizations.of(context)!.integration,
+                        style: const TextStyle(
+                            fontSize: 14, color: Color(0xff056DF6)),
+                      )),
                   onTap: () => _lanuchURL(1),
                 ),
                 InkWell(
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width / 4 - 20,
-                    child: Text(
-                      AppLocalizations .of(context)!.api_docs,
-                    style: const TextStyle(fontSize: 14, color: Color(0xff056DF6)),
-                    )
-                  ),
+                      width: MediaQuery.of(context).size.width / 4 - 20,
+                      child: Text(
+                        AppLocalizations.of(context)!.api_docs,
+                        style: const TextStyle(
+                            fontSize: 14, color: Color(0xff056DF6)),
+                      )),
                   onTap: () => _lanuchURL(2),
                 ),
                 InkWell(
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width / 4 - 20,
-                    child: Text(
-                      AppLocalizations .of(context)!.common_problems,
-                    style: const TextStyle(fontSize: 14, color: Color(0xff056DF6)),
-                    )
-                  ),
+                      width: MediaQuery.of(context).size.width / 4 - 20,
+                      child: Text(
+                        AppLocalizations.of(context)!.common_problems,
+                        style: const TextStyle(
+                            fontSize: 14, color: Color(0xff056DF6)),
+                      )),
                   onTap: () => _lanuchURL(3),
                 ),
                 const SizedBox(width: 1),
@@ -288,10 +289,10 @@ class _LoginWidgetState extends State<LoginWidget> {
     final result = await TUICallKit.instance.login(GenerateTestUserSig.sdkAppId,
         _userId, GenerateTestUserSig.genTestSig(_userId));
 
-    TencentCloudChatPush().registerPush(onNotificationClicked: _onNotificationClicked);
+    TencentCloudChatPush()
+        .registerPush(onNotificationClicked: _onNotificationClicked);
 
     if (result.code.isEmpty) {
-
       SettingsConfig.showBlurBackground = true;
       SettingsConfig.enableFloatWindow = true;
       SettingsConfig.showIncomingBanner = true;
@@ -325,7 +326,7 @@ class _LoginWidgetState extends State<LoginWidget> {
   }
 
   _enterMainWidget() {
-    Navigator.of(context).pushAndRemoveUntil( MaterialPageRoute(
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
       builder: (context) {
         return const MainWidget();
       },
@@ -341,7 +342,9 @@ class _LoginWidgetState extends State<LoginWidget> {
     return textPainter.width;
   }
 
-  _onNotificationClicked({required String ext, String? userID, String? groupID}) {
-    debugPrint("_onNotificationClicked: $ext, userID: $userID, groupID: $groupID");
+  _onNotificationClicked(
+      {required String ext, String? userID, String? groupID}) {
+    debugPrint(
+        "_onNotificationClicked: $ext, userID: $userID, groupID: $groupID");
   }
 }
