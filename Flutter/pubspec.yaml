@@ -18,7 +18,9 @@ dependencies:
   crypto: ^3.0.1
 
   tencent_calls_engine:
-    path: '../../tui-callengine'
+    git:
+      url: git@github.com:thousandsunny-vn/tui-callengine.git
+      ref: main
   tencent_cloud_uikit_core: ^1.7.3
   tencent_cloud_chat_sdk: any
 
