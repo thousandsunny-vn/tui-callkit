@@ -11,13 +11,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  file: ^6.1.4
+  file: ^7.0.0
   path_provider: ^2.0.12
   plugin_platform_interface: ^2.0.2
   shared_preferences: ^2.2.0
   crypto: ^3.0.1
 
-  tencent_calls_engine: ">=2.7.1 <2.8.0"
+  tencent_calls_engine:
+    path: '../../tencent-call-engine'
   tencent_cloud_uikit_core: ^1.7.3
   tencent_cloud_chat_sdk: any
 
